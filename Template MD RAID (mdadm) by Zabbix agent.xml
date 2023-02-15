@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>6.0</version>
+    <date>2023-02-15T21:02:38Z</date>
+    <groups>
+        <group>
+            <uuid>7df96b18c230490a9a0a9e2307226338</uuid>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <uuid>f7b1d50904024fa095fbc1be466a7a95</uuid>
+            <template>Template MD RAID by Zabbix agent</template>
+            <name>Template MD RAID (mdadm) by Zabbix agent</name>
+            <description>Template MD RAID (mdadm) by Zabbix agent - template for monitoring mdadm RAID statuses.
+
+Template forked by https://github.com/linuxsquad/zabbix_mdraid.
+
+Development by Mikhail Andreev
+
+-----
+Add config and script files to /etc/zabbix/zabbix_agentd.d/:
+- Create folders /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/ and /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/scripts
+- Put mdraid_zabbix.sh in path /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/ and /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/scripts
+
+Create sudoers rules to /etc/sudoers.d/:
+- Create file /etc/sudoers.d/zabbix
+- Add row in file - zabbix  ALL=NOPASSWD:  /bin/bash, /sbin/mdadm, /proc/mdstat, /tmp/zabbix_mdraid_discovery.json, /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/scripts/mdraid_zabbix.sh
+
+Check MD RAID monitoring from local server - /etc/zabbix/zabbix_agentd.d/mdraid_zabbix/scripts/mdraid_zabbix.sh -D
+Check MD RAID monitoring from Zabbix Proxy - zabbix_get -s SERVER_NAME -k mdraid.discovery</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>6cfebae241fe46b0956048e075d82be9</uuid>
+                    <name>MD RAID Discovery</name>
+                    <key>mdraid.discovery</key>
+                    <delay>600</delay>
+                    <lifetime>7d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>f5e046e2e85e4e6195ae4230b6991451</uuid>
+                            <name>{#MD_DEVICE} Array device #$3</name>
+                            <key>mdraid[{#MD_DEVICE},d,0]</key>
+                            <delay>600</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>910025737703496b9c2aa16708c192de</uuid>
+                            <name>{#MD_DEVICE} Array device #$3</name>
+                            <key>mdraid[{#MD_DEVICE},d,1]</key>
+                            <delay>600</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>5d4d33765add44d18f2f4402cd9b51ee</uuid>
+                            <name>{#MD_DEVICE} Number of Devices</name>
+                            <key>mdraid[{#MD_DEVICE},e,&quot;Raid Devices&quot;]</key>
+                            <delay>300</delay>
+                            <history>1d</history>
+                            <trends>1d</trends>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>b60a2524014246ea95965bfe33f2bb8e</uuid>
+                            <name>{#MD_DEVICE} RAID Level</name>
+                            <key>mdraid[{#MD_DEVICE},e,&quot;Raid Level&quot;]</key>
+                            <delay>600</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>c2dba2c3015b49569824b86d6f5511e8</uuid>
+                            <name>{#MD_DEVICE} State</name>
+                            <key>mdraid[{#MD_DEVICE},e,&quot;State&quot;]</key>
+                            <delay>300</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>de50d825718b42a4b1456dc41eaf7782</uuid>
+                                    <expression>find(/Template MD RAID by Zabbix agent/mdraid[{#MD_DEVICE},e,&quot;State&quot;],,&quot;regexp&quot;,&quot;(degraded|resyncing|recovering|Not Started)&quot;)=1</expression>
+                                    <name>{#MD_DEVICE} RAID State</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>d6b6295df81d4fcb8d739eb19e3554a7</uuid>
+                            <name>{#MD_DEVICE} Array Size</name>
+                            <key>mdraid[{#MD_DEVICE},s,&quot;Array Size&quot;]</key>
+                            <delay>600</delay>
+                            <history>1d</history>
+                            <trends>1d</trends>
+                            <units>B</units>
+                            <preprocessing>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>1024</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>ad13fcf9a91f46acb09bdcf83e0f95cf</uuid>
+                            <name>{#MD_DEVICE} read operation speed</name>
+                            <key>vfs.dev.read[{#MD_DEVICE},operations]</key>
+                            <delay>60</delay>
+                            <value_type>FLOAT</value_type>
+                            <units>ops</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3e1d41f07edd4c6fa041000f52257ddf</uuid>
+                            <name>{#MD_DEVICE} data read speed</name>
+                            <key>vfs.dev.read[{#MD_DEVICE},sectors]</key>
+                            <delay>60</delay>
+                            <value_type>FLOAT</value_type>
+                            <units>sps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>5efe3cac40e742ee9ac109ca9e8b3298</uuid>
+                            <name>{#MD_DEVICE} write operation speed</name>
+                            <key>vfs.dev.write[{#MD_DEVICE},operations]</key>
+                            <delay>60</delay>
+                            <value_type>FLOAT</value_type>
+                            <units>ops</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3a081f34c722498ab1b0f50de3ef1656</uuid>
+                            <name>{#MD_DEVICE} data write speed</name>
+                            <key>vfs.dev.write[{#MD_DEVICE},sectors]</key>
+                            <delay>60</delay>
+                            <value_type>FLOAT</value_type>
+                            <units>sps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MD_RAID</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>62316b21d4914f27a9bdc3b7d869a6dd</uuid>
+                            <name>{#MD_DEVICE} Array IO Performance</name>
+                            <width>400</width>
+                            <ymin_type_1>FIXED</ymin_type_1>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>FF9999</color>
+                                    <item>
+                                        <host>Template MD RAID by Zabbix agent</host>
+                                        <key>vfs.dev.read[{#MD_DEVICE},sectors]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>CCFFCC</color>
+                                    <item>
+                                        <host>Template MD RAID by Zabbix agent</host>
+                                        <key>vfs.dev.write[{#MD_DEVICE},sectors]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <drawtype>BOLD_LINE</drawtype>
+                                    <color>FF3333</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template MD RAID by Zabbix agent</host>
+                                        <key>vfs.dev.read[{#MD_DEVICE},operations]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <drawtype>BOLD_LINE</drawtype>
+                                    <color>00DD00</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template MD RAID by Zabbix agent</host>
+                                        <key>vfs.dev.write[{#MD_DEVICE},operations]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
