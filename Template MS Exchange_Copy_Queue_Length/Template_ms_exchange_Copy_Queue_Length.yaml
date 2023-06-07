@@ -1,0 +1,113 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-06-07T08:53:20Z'
+  groups:
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 2193bae8d1684bd3a61aa3923241f2f0
+      template: 'Template Microsoft Exchange 2016 CopyQueueLenght by Zabbix Agent'
+      name: 'Template Microsoft Exchange 2016 CopyQueueLenght by Zabbix Agent'
+      description: |
+        Development by Mikhail Andreev
+        
+        -----
+        Add config and script files to Zabbix Agent folder (default C:\zabbix_agent):
+        - Create folders C:\zabbix_agent\zabbix_agentd.conf.d\ms_exchange_Copy_Queue_Length\scripts
+        - Put getMailboxDatabase.ps1 and getMailboxDatabaseCopyQueueLength.ps1 to C:\zabbix_agent\zabbix_agentd.conf.d\ms_exchange_Copy_Queue_Length\scripts and ms_exchange_Copy_Queue_Length.conf to C:\zabbix_agent\zabbix_agentd.conf.d
+        - Restart Zabbix Agent service
+        
+        Check MD RAID monitoring from Zabbix Proxy - zabbix_get -s SERVER_NAME -k discovery.ms_exchange_copy_queue_lenght
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          uuid: 4f325ebc92d345a4a8d1b248f259bc96
+          name: 'CopyQueueLenght: get all copy queue lenght for all mailDB'
+          key: getMailboxDatabase
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          description: 'Exchange Get Copy Queue Length - get MS Exch servers lists, DB status and CopyQueueLenght in JSON array'
+          tags:
+            -
+              tag: Application
+              value: 'Exchange CopyQueueLenght'
+      discovery_rules:
+        -
+          uuid: 91a9d073775e4500adf196e5c425fe7b
+          name: 'Discovery MS Exch CopyQueueLenght for all mailDB'
+          type: DEPENDENT
+          key: exchange.discovery.getMailboxDatabase
+          delay: '0'
+          lifetime: 7d
+          description: |
+            Discovery MS Exch CopyQueueLenght for all mailDB - servers, DB status and CopyQueueLenght .
+            Discovery rule depends CopyQueueLenght: get all copy queue lenght for all mailDB (getMailboxDatabase)
+          item_prototypes:
+            -
+              uuid: 94ac4668af244278ae2e4fa414e8620d
+              name: 'CopyQueueLength: mailDB {#EXCHANGE.COPYQUEUELENGTH.NAME} in status {#EXCHANGE.COPYQUEUELENGTH.STATUS}'
+              type: ZABBIX_ACTIVE
+              key: 'getMailboxDatabaseCopyQueueLength[{#EXCHANGE.COPYQUEUELENGTH.NAME}]'
+              delay: 5m
+              description: 'Get CopyQueueLength for mailDB {#EXCHANGE.COPYQUEUELENGTH.NAME} in status {#EXCHANGE.COPYQUEUELENGTH.STATUS}'
+              tags:
+                -
+                  tag: Application
+                  value: 'Exchange CopyQueueLenght'
+              trigger_prototypes:
+                -
+                  uuid: 992d2db262ca40e593d8b21dc3f97d76
+                  expression: 'avg(/Template Microsoft Exchange 2016 CopyQueueLenght by Zabbix Agent/getMailboxDatabaseCopyQueueLength[{#EXCHANGE.COPYQUEUELENGTH.NAME}],10m)>500'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'avg(/Template Microsoft Exchange 2016 CopyQueueLenght by Zabbix Agent/getMailboxDatabaseCopyQueueLength[{#EXCHANGE.COPYQUEUELENGTH.NAME}],10m)<500'
+                  name: 'Copy queue lenght in mailDB {#EXCHANGE.COPYQUEUELENGTH.NAME} > 500 mails'
+                  priority: HIGH
+                  tags:
+                    -
+                      tag: Application
+                      value: 'Exchange CopyQueueLenght'
+                    -
+                      tag: __itsm_category
+                      value: '1'
+                    -
+                      tag: __itsm_service
+                      value: email
+                    -
+                      tag: __itsm_type
+                      value: failure
+                    -
+                      tag: __itsm_urgency
+                      value: '1'
+          master_item:
+            key: getMailboxDatabase
+          lld_macro_paths:
+            -
+              lld_macro: '{#EXCHANGE.COPYQUEUELENGTH.COPYQUEUELENGTH}'
+              path: '$.["CopyQueueLength"]'
+            -
+              lld_macro: '{#EXCHANGE.COPYQUEUELENGTH.NAME}'
+              path: '$.["Name"]'
+            -
+              lld_macro: '{#EXCHANGE.COPYQUEUELENGTH.STATUS}'
+              path: '$.["Status"]'
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '11'
+                - '"Mounted"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - \
+                - '%'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '6'
+                - '"Healthy"'
